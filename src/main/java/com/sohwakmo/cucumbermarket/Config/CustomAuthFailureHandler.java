@@ -1,4 +1,4 @@
-package com.sohwakmo.cucumbermarket.config;
+package com.sohwakmo.cucumbermarket.Config;
 
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
