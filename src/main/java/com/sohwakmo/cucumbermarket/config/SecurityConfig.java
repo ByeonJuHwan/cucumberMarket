@@ -1,4 +1,4 @@
-package com.sohwakmo.cucumbermarket.config;
+package com.sohwakmo.cucumbermarket.Config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

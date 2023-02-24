@@ -1,4 +1,4 @@
-package com.sohwakmo.cucumbermarket.config;
+package com.sohwakmo.cucumbermarket.Config;
 
 import java.util.Properties;
 
