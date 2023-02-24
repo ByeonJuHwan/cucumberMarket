@@ -17,6 +17,19 @@
 - Spring Boot, Gradle, Spring JPA, Oracle, Java17
 
 --- 
-### WebSocket, SocketJS, Stomp 로 다중 채팅방
+### WebSocket, SocketJS, Stomp 로 다중 채팅방 구현
+
+**WebSocket 이란?**
+
+> 기존의 단방향 HTTP 프로토콜과 호환되어 양방향 통신을 제공하기 위해 개발된 프로토콜.
+> 일반 Socket 통신과 달리 HTTP 80 Port를 사용하므로 방화벽에 제약이 없으며 통상 WebSocket으로 불린다.
+> 접속까지는 HTTP 프로토콜을 이용하고, 그 이후 통신은 지체적은 WebSocket 프로토콜로 통신하게 된다.
+
+웹소켓만의 문제는 모든 클라언트 브라우저에서 WebSocket을 지원한다는 보장이 없다는 것이다.
+
+이러한 문제를 해결 하기위해서 일반적으로 Spring 에서는 **SockJS**를 사용한다.
+
+**STOMP**는 메세징 전송을 효율적으로 하기위해 탄생항 프로토콜이다.
+기본적으로 pub / sub 구조로 되어있어 메시지를 전송하고 메시지를 받아 처리하는 부분이 확실히 정해져 있다는 이점이 있다.
 
 
