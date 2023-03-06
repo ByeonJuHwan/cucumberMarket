@@ -54,20 +54,16 @@ public class    PostController {
         int endPage=1;
         if(list.size()!=0) {
             if(page.getTotalPages()<11){
-                startPage= 1;
                 endPage = page.getTotalPages();
             }else{
                 if(page.getPageable().getPageNumber()<10){
-                    startPage=1;
                     endPage=10;
                 }else{
                     startPage=(page.getPageable().getPageNumber()/10)*10+1;
                     endPage = Math.min(page.getTotalPages(), (page.getPageable().getPageNumber() / 10) * 10 + 10);
                 }
             }
-
         }
-        int a = page.getPageable().getPageNumber();
         model.addAttribute("address", address);
         model.addAttribute("searchText", searchText);
         model.addAttribute("list", page);

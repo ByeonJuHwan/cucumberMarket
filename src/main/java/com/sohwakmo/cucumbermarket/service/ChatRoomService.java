@@ -141,8 +141,8 @@ public class ChatRoomService {
 
     @Transactional
     public void deleteChatRoom(String roomId, String nickname,Integer memberNo) {
-        Member member = memberRepository.findByNickname(nickname).orElse(null);
-        Member loginUser = memberRepository.findById(memberNo).orElse(null);
+        Member member = memberRepository.findByNickname(nickname).get();
+        Member loginUser = memberRepository.findById(memberNo).get();
         ChatRoom chatRoom = chatRoomRepository.findByRoomIdAndMemberMemberNo(roomId, member.getMemberNo());
         
         if(!chatRoom.getLeavedUser().equals("nobody")){ // nobody가 아니면 즉, 한명이라도 채팅방을 나가면 이제 채팅방을 삭제한다.
@@ -151,7 +151,7 @@ public class ChatRoomService {
             List<Message> deleteMessageList2 = messageRepository.findByMessageNumAndRoomIdOrderByIdDesc(member.getMemberNo(), roomId);
             messageRepository.deleteAllInBatch(deleteMessageList1);
             messageRepository.deleteAllInBatch(deleteMessageList2);
-        }else{
+        }else{ // 한쪽만 나갔을 경우 나간사람 닉네임을 컬럼에 저장하고 안읽은 메세지도 0으로 읽음 처리 해준다.
             chatRoom.setLeavedUser(loginUser.getNickname());
             chatRoom.setUnReadMessages(0);
         }
