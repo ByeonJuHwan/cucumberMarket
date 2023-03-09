@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Builder
 @Getter
 @Setter
-@ToString(exclude = {"member"})
 @SequenceGenerator(name = "POSTS_SEQ_GEN",sequenceName = "POST_SEQ", allocationSize = 1)
 public class Post extends BaseTimeEntity {
 
@@ -25,7 +24,8 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY) // 다대일 관계(relation)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Member member;
 
     @ColumnDefault("0")
