@@ -47,6 +47,8 @@ public class PostService {
      * @return 결과 페이지들을 리턴
      */
     public List<PostReadDto> searchPost(String searchText,String address){
+        String[] memberAddressArr = address.split(" ");
+        address = memberAddressArr[0];
         List<Post> postList =  postRepository.findByTitleIgnoreCaseContainingOrContentIgnoreCaseContainingOrMemberNicknameIgnoreCaseContainingOrderByPostNoDesc(searchText,searchText,searchText);
         List<PostReadDto> list = new ArrayList<>();
         for(Post p : postList){
@@ -58,7 +60,7 @@ public class PostService {
                 list.add(dto);
             }else {
                 String memberAddress = p.getMember().getAddress();
-                String memberDetailAddress[] = memberAddress.split(" ");
+                String[] memberDetailAddress = memberAddress.split(" ");
                 if (memberDetailAddress[0].equals(address)) {
                     Member member = memberRepository.findById(p.getMember().getMemberNo()).get();
                     PostReadDto dto = PostReadDto.builder()
@@ -69,6 +71,17 @@ public class PostService {
             }
         }
         return list;
+    }
+
+    /**
+     * 메서드 searchPost() 로 받아온 list 를 리턴
+     * @param searchText 검색어
+     * @param memberAddress 로그인한 유저의 주소
+     * @return 검색 결과가 1개라도 있으면 1 없으면 0
+     */
+    public int checkSearchResult(String searchText, String memberAddress) {
+        List<PostReadDto> list = searchPost(searchText, memberAddress);
+        return list.size() == 0 ? 0 : 1;
     }
 
     @Transactional
@@ -219,6 +232,8 @@ public class PostService {
         }
 
     }
+
+
 }
 
 

@@ -30,23 +30,17 @@ import java.util.Map;
 
 @Slf4j
 @Controller
-@RequestMapping("/post")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class    PostController {
 
     private final PostService postService;
     private final MemberService memberService;
 
-    @GetMapping("/list")
+    @GetMapping("/posts")
     public String list(Model model, @PageableDefault(size = 10, sort = "postNo", direction = Sort.Direction.DESC) Pageable pageable,
                        @RequestParam(required = false,defaultValue = "")String searchText, @RequestParam(required = false,defaultValue = "전국") String address){
-        String memberAddress[] = address.split(" ");
-        List<PostReadDto> list = postService.searchPost(searchText,memberAddress[0]);
-        if(list.size()==0){
-            model.addAttribute("searchResult", 0);
-        }else{
-            model.addAttribute("searchResult", 1);
-        }
+        List<PostReadDto> list = postService.searchPost(searchText,address);
         final int start = (int)pageable.getOffset();
         final int end = Math.min((start + pageable.getPageSize()), list.size());
         final Page<PostReadDto> page = new PageImpl<>(list.subList(start, end), pageable, list.size());
@@ -64,6 +58,7 @@ public class    PostController {
                 }
             }
         }
+        model.addAttribute("searchResult", postService.checkSearchResult(searchText, address));
         model.addAttribute("address", address);
         model.addAttribute("searchText", searchText);
         model.addAttribute("list", page);
