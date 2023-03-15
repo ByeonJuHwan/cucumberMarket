@@ -37,7 +37,7 @@
       <!--제목, 버튼-->
       <div class="mt-100">
         <div>
-          <form th:object="${post}" id="form" enctype="multipart/form-data">
+          <form id="form" enctype="multipart/form-data">
             <input
               type="hidden"
               name="memberNo"
@@ -50,9 +50,8 @@
                 class="mb-10"
                 id="title"
                 aria-describedby="emailHelp"
-                th:field="*{title}"
                 placeholder="제목을 입력해 주세요."
-                th:value="${post.title}"
+                th:name="title"
               />
             </div>
             <div class="warningBox">
@@ -87,10 +86,8 @@
                 placeholder="내용을 입력해 주세요."
                 id="postContent"
                 style="height: 200px"
-                th:field="*{content}"
-                th:value="${post.content}"
-              >
-              </textarea>
+                th:name="content"
+              ></textarea>
 
               <label for="postContent">내용을 입력하세요.</label>
             </div>

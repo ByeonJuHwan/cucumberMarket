@@ -17,7 +17,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
       return;
     }
     const form = document.querySelector("#form");
-    form.action = "/post/create";
+    form.action = "/api/create";
     form.method = "post";
     form.submit();
   }

@@ -157,6 +157,21 @@ public class MemberService {
         log.info(member.toString());
     }
 
+    /**
+     * 게시글 생성시 자동으로 매너온도를 올려주기위한 메소드
+     *
+     * @param memberNo 회원 PK
+     * @return 매너온더가 업데이트된 회원 객체를 리턴
+     */
+    public Member updateGrade(Integer memberNo) {
+
+        Member member = findMemberByMemberNo(memberNo);
+        //매너온도 +1.5
+        member.gradeUpdate(member.getGrade()+1.5);
+
+        return member;
+    }
+
     @Transactional
     public MemberRegisterDto socialLogin(String code){
 
