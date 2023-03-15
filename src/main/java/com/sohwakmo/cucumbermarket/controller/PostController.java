@@ -70,54 +70,33 @@ public class    PostController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/detail")
     public String detail(Model model, @RequestParam Integer postNo,@RequestParam(required = false, defaultValue = "-1")Integer clickCount){
-        if(clickCount==-1){ // modify 에서 넘어올경우 파라미터 초기화
-            clickCount = postService.findPostByPostNo(postNo).getClickCount()-1;
-        }
+        if(clickCount==-1) clickCount = postService.setClickCount(postNo, clickCount);  // modify 에서 넘어올경우 파라미터 초기화
         Post post = postService.findPostByIdandUpdateClickCount(postNo,clickCount); // detail page 로 올경우 조회수도 같이 증가.
-        String nickname = post.getMember().getNickname();
         log.info("컨트롤러 Post={}",post);
         model.addAttribute("post", post);
-        model.addAttribute("nickname", nickname);
+        model.addAttribute("nickname", post.getMember().getNickname());
         model.addAttribute("member", post.getMember());
         return "/post/detail";
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/create")
-    public String create(Model model, @RequestParam(required = false)Integer id){ // 새글 작성일경우 id가 필요 없으므로 필수 항복은 아니므로 false를 준다.
-        if(id==null){
-            model.addAttribute("post", new Post());
-            return "/post/create";
-        }else{
-            Post post = postService.findPostByPostNo(id);
-            model.addAttribute("post", post);
-            return "/post/detail";
-        }
+    public String create(Model model){
+        model.addAttribute("post", new Post());
+        return "/post/create";
     }
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/create")
     public String create(PostCreateDto dto, Integer memberNo, @RequestParam(value = "files", required = false) List<MultipartFile> files,RedirectAttributes attrs) throws Exception {
+        // 매너온도 +1.5
+        Member member = memberService.updateGrade(memberNo);
 
-        Member member = memberService.findMemberByMemberNo(memberNo);
+        // dto 로 넘어온 내용들을 가지고 게시물생성
+        postService.insertPost(dto, member, files);
 
-        //매너온도 +1.5
-        member.gradeUpdate(member.getGrade()+1.5);
-
-        log.info(member.toString());
-        Post post = PostCreateDto.builder()
-                .title(dto.getTitle()).content(dto.getContent()).clickCount(dto.getClickCount()).member(member).build().toEntity();
-        for (MultipartFile multipartFile : files) {
-            log.info("files={}", files);
-            log.info("multipartFile={}",multipartFile);
-            if(multipartFile.isEmpty()){ // 사진을 넣지않고 제목 내용만 입력한경우
-                Post newPost = postService.createPost(post);
-            }else{ // 사진도 넣은경우
-                Post newPost=postService.createPost(post,multipartFile);
-            }
-        }
         attrs.addAttribute("address", member.getAddress());
-        return "redirect:/post/list";
+        return "redirect:/api/posts";
     }
 
     @PreAuthorize("hasRole('USER')")
