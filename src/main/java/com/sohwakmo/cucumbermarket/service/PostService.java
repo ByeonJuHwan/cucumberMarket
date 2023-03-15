@@ -3,6 +3,7 @@ package com.sohwakmo.cucumbermarket.service;
 import com.sohwakmo.cucumbermarket.domain.Member;
 import com.sohwakmo.cucumbermarket.domain.Post;
 import com.sohwakmo.cucumbermarket.domain.Reply;
+import com.sohwakmo.cucumbermarket.dto.PostCreateDto;
 import com.sohwakmo.cucumbermarket.dto.PostReadDto;
 import com.sohwakmo.cucumbermarket.dto.PostUpdateDto;
 import com.sohwakmo.cucumbermarket.repository.MemberRepository;
@@ -21,8 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 
 @Slf4j
@@ -92,32 +93,46 @@ public class PostService {
     }
 
     /**
+     * 글 작성시 post 객체를 생성해서 DB에 저장
+     * @param dto
+     * @param member
+     * @param files
+     */
+    public void insertPost(PostCreateDto dto, Member member, List<MultipartFile> files) throws Exception {
+        Post post = PostCreateDto.builder()
+                .title(dto.getTitle()).content(dto.getContent()).clickCount(dto.getClickCount()).member(member).build().toEntity();
+
+        if(files.stream().findFirst().get().isEmpty())createPost(post); // 사진은 안넣은 경우
+        else createPost(post,files); // 사진도 넣은경우
+    }
+
+    /**
      * 사진을 넣고 작성을한경우
-     * @param post 제목, 내용
+     * @param post  제목, 내용
      * @param files 사진
-     * @return 변경된 객체
      * @throws Exception 사진이 있냐 없냐 에따라 exception 발생
      */
-    public Post createPost(Post post, MultipartFile files)throws Exception{
-        String fileName = saveImage(files); // 이미지 생성,저장 메서드
-
-        if(post.getImageUrl01()==null){
-            post.setImageUrl01("/files/"+fileName);
-            post.setImageName01(fileName);
-        }else{
-            post.setImageUrl02("/files/"+fileName);
-            post.setImageName02(fileName);
+    public void createPost(Post post, List<MultipartFile> files)throws Exception{
+        for (MultipartFile multipartFile : files) {
+            String fileName = saveImage(multipartFile); // 이미지 생성,저장 메서드
+            if(post.getImageUrl01()==null){
+                post.setImageUrl01("/files/"+fileName);
+                post.setImageName01(fileName);
+            }else{
+                post.setImageUrl02("/files/"+fileName);
+                post.setImageName02(fileName);
+            }
         }
-        return postRepository.save(post);
+        postRepository.save(post);
     }
 
     /**
      * 사진을 넣지않는 일반적인 게시물
+     *
      * @param post 제목,내용
-     * @return 변경된 게시물 객체
      */
-    public Post createPost(Post post){
-        return postRepository.save(post);
+    public void createPost(Post post){
+        postRepository.save(post);
     }
 
 
@@ -144,7 +159,7 @@ public class PostService {
 
 
     private  String saveImage(MultipartFile files) throws IOException {
-        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
 
         String fileName = files.getOriginalFilename();
 
@@ -233,7 +248,14 @@ public class PostService {
 
     }
 
-
+    /**
+     * modify 에서 detail 페이지로 다시 넘어오는경우 조회수가 2번 늘어나는 것을 방지하고자 -1 을해준다.
+     * @param postNo 게시글 id
+     * @param clickCount 조회수
+     */
+    public int setClickCount(Integer postNo, Integer clickCount) {
+        return findPostByPostNo(postNo).getClickCount() - 1;
+    }
 }
 
 

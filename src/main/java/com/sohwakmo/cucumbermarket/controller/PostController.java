@@ -81,8 +81,7 @@ public class    PostController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/create")
-    public String create(Model model){
-        model.addAttribute("post", new Post());
+    public String create(){
         return "/post/create";
     }
 

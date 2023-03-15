@@ -35,7 +35,7 @@
             <tr
               class="tr"
               th:each="list : ${list}"
-              th:onclick="|location.href='@{/post/detail(postNo=${list.postNo},clickCount=${list.clickCount})}'|"
+              th:onclick="|location.href='@{/api/detail(postNo=${list.postNo},clickCount=${list.clickCount})}'|"
               id="clickCount"
             >
               <td th:text="${list.postNo}"></td>
@@ -91,16 +91,16 @@
         <!--글 작성 버튼-->
         <div id="btnGroup" class="col">
           <div class="createButton">
-            <a type="button" class="btn" th:href="@{/post/create}">글 작성</a>
+            <a type="button" class="btn" th:href="@{/api/create}">글 작성</a>
           </div>
           <th:block th:if="${address} != '전국'">
             <div class="listButton">
-              <a type="button" class="btn" th:href="@{/post/list?address={address} (address=${#authentication.principal.address})}">전체 목록</a>
+              <a type="button" class="btn" th:href="@{/api/posts?address={address} (address=${#authentication.principal.address})}">전체 목록</a>
             </div>
           </th:block>
           <th:block th:if="${address} == '전국'">
             <div class="listButton">
-              <a type="button" class="btn" th:href="@{/post/list?address={address} (address=${address})}">전체 목록</a>
+              <a type="button" class="btn" th:href="@{/api/posts?address={address} (address=${address})}">전체 목록</a>
             </div>
           </th:block>
         </div>
@@ -117,7 +117,7 @@
             <th:block th:if="${searchText==''}">
               <a
                 class="page-link"
-                th:href="@{/post/list(page=${list.pageable.pageNumber-1},address=${address})}"
+                th:href="@{/api/posts(page=${list.pageable.pageNumber-1},address=${address})}"
                 tabindex="-1"
                 ><span aria-hidden="true">&lt;</span></a
               >
@@ -125,7 +125,7 @@
             <th:block th:if="${searchText !=''}">
               <a
                 class="page-link"
-                th:href="@{/post/list(page=${list.pageable.pageNumber-1},searchText=${searchText},address=${address})}"
+                th:href="@{/api/posts(page=${list.pageable.pageNumber-1},searchText=${searchText},address=${address})}"
                 tabindex="-1"
                 ><span aria-hidden="true">&lt;</span></a
               >
@@ -140,14 +140,14 @@
               <a
                 class="page-link currentPage"
                 th:text="${i}"
-                th:href="@{/post/list(page=${i-1},address=${address})}"
+                th:href="@{/api/posts(page=${i-1},address=${address})}"
               ></a>
             </th:block>
             <th:block th:if="${searchText!=''}">
               <a
                 class="page-link currentPage"
                 th:text="${i}"
-                th:href="@{/post/list(page=${i-1},searchText=${searchText},address=${address})}"
+                th:href="@{/api/posts(page=${i-1},searchText=${searchText},address=${address})}"
               ></a>
             </th:block>
           </li>
@@ -158,7 +158,7 @@
             <th:block th:if="${searchText==''}">
               <a
                 class="page-link"
-                th:href="@{/post/list(page=${list.pageable.pageNumber+1},address=${address})}"
+                th:href="@{/api/posts(page=${list.pageable.pageNumber+1},address=${address})}"
                 tabindex="-1"
                 ><span aria-hidden="true">&gt;</span></a
               >
@@ -166,7 +166,7 @@
             <th:block th:if="${searchText !=''}">
               <a
                 class="page-link"
-                th:href="@{/post/list(page=${list.pageable.pageNumber+1},searchText=${searchText},address=${address})}"
+                th:href="@{/api/posts(page=${list.pageable.pageNumber+1},searchText=${searchText},address=${address})}"
                 tabindex="-1"
                 ><span aria-hidden="true">&gt;</span></a
               >
