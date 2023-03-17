@@ -101,15 +101,12 @@ public class    PostController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/delete")
     public String delete(Integer id, Integer memberNo){
-        log.info("delete(id={}, memberNo={})", id, memberNo);
-
         //매너온도 -1.5
-        Member member = memberService.findMemberByMemberNo(memberNo);
-        member.gradeUpdate(member.getGrade()-1.5);
-
+        memberService.minusGrade(memberNo);
+        // 관련 댓글 및 게시물 삭제
         postService.deletePost(id);
 
-        return "redirect:/post/list";
+        return "redirect:/api/posts";
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -118,7 +115,6 @@ public class    PostController {
         Post post = postService.findPostByPostNo(id);
         model.addAttribute("post", post);
         return "/post/modify";
-
     }
 
     @PreAuthorize("hasRole('USER')")

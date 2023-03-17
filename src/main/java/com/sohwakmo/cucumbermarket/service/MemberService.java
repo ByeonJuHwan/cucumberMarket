@@ -172,6 +172,17 @@ public class MemberService {
         return member;
     }
 
+    /**
+     * 게시글 삭제시 올랐던 매너온도를 내린다.
+     * @param memberNo 회원 PK
+     */
+    @Transactional
+    public void minusGrade(Integer memberNo) {
+        Member member = findMemberByMemberNo(memberNo);
+        //매너온도 +1.5
+        member.gradeUpdate(member.getGrade()-1.5);
+    }
+
     @Transactional
     public MemberRegisterDto socialLogin(String code){
 
