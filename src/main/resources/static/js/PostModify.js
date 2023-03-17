@@ -18,7 +18,7 @@ modifyButton.addEventListener("click", function () {
 
   if (check) {
     // 사용자가 '확인'을 선택했을 때
-    form.action = "/post/modify"; // 제출 요청 주소
+    form.action = "/api/modify"; // 제출 요청 주소
     form.method = "post"; // 제출 요청 방식
     form.submit(); // 서버로 제출
   }

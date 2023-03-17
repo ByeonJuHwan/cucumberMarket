@@ -121,8 +121,7 @@ public class    PostController {
     @PostMapping("/modify")
     public String modify(PostUpdateDto dto,RedirectAttributes attrs, @RequestParam("files") List<MultipartFile> files){
         Integer postNo = postService.modifyPost(dto);
-        log.info("postNo={}",postNo);
         attrs.addAttribute("postNo",postNo);
-        return "redirect:/post/detail";
+        return "redirect:/api/detail";
     }
 }
