@@ -12,6 +12,9 @@ import com.sohwakmo.cucumbermarket.repository.PostRepository;
 import com.sohwakmo.cucumbermarket.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -83,6 +85,55 @@ public class PostService {
     public int checkSearchResult(String searchText, String memberAddress) {
         List<PostReadDto> list = searchPost(searchText, memberAddress);
         return list.size() == 0 ? 0 : 1;
+    }
+
+    /**
+     * modify 에서 detail 페이지로 다시 넘어오는경우 조회수가 2번 늘어나는 것을 방지하고자 -1 을해준다.
+     * @param postNo 게시글 id
+     * @param clickCount 조회수
+     */
+    public int setClickCount(Integer postNo, Integer clickCount) {
+        return findPostByPostNo(postNo).getClickCount() - 1;
+    }
+
+    /**
+     * 게시물 리시트를 Page 로 변환하는 작업
+     * @param pageable
+     * @param list 검색된 게시물 리스트
+     * @return list -> Page 로 변환된 결과
+     */
+    public Page listToPage(Pageable pageable, List<PostReadDto> list) {
+        final int start = (int)pageable.getOffset();
+        final int end = Math.min((start + pageable.getPageSize()), list.size());
+        return new PageImpl<>(list.subList(start, end), pageable, list.size());
+    }
+
+    /**
+     * 변환 받은 페이지에서 시작페이지와 마지막 페이지를 계산해서 리턴
+     *
+     * @param page 구해야하는 페이지
+     * @param list page 로 변경받기 전의 리스트
+     * @return [0] 에는 시작 페이지, [1] 에는 마지막 페이지를 넣는다.
+     */
+    public List<Integer> setStartEndPage(Page page, List<PostReadDto> list) {
+        List<Integer> pageList = new ArrayList<>();
+        int startPage=1;
+        int endPage=1;
+        if(list.size()!=0) {
+            if(page.getTotalPages()<11){
+                endPage = page.getTotalPages();
+            }else{
+                if(page.getPageable().getPageNumber()<10){
+                    endPage=10;
+                }else{
+                    startPage=(page.getPageable().getPageNumber()/10)*10+1;
+                    endPage = Math.min(page.getTotalPages(), (page.getPageable().getPageNumber() / 10) * 10 + 10);
+                }
+            }
+        }
+        pageList.add(startPage);
+        pageList.add(endPage);
+        return pageList;
     }
 
     @Transactional
@@ -246,15 +297,6 @@ public class PostService {
             return "2번이미지 삽입 완료";
         }
 
-    }
-
-    /**
-     * modify 에서 detail 페이지로 다시 넘어오는경우 조회수가 2번 늘어나는 것을 방지하고자 -1 을해준다.
-     * @param postNo 게시글 id
-     * @param clickCount 조회수
-     */
-    public int setClickCount(Integer postNo, Integer clickCount) {
-        return findPostByPostNo(postNo).getClickCount() - 1;
     }
 }
 

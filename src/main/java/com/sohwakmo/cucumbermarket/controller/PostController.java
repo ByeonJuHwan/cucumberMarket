@@ -41,29 +41,18 @@ public class    PostController {
     public String list(Model model, @PageableDefault(size = 10, sort = "postNo", direction = Sort.Direction.DESC) Pageable pageable,
                        @RequestParam(required = false,defaultValue = "")String searchText, @RequestParam(required = false,defaultValue = "전국") String address){
         List<PostReadDto> list = postService.searchPost(searchText,address);
-        final int start = (int)pageable.getOffset();
-        final int end = Math.min((start + pageable.getPageSize()), list.size());
-        final Page<PostReadDto> page = new PageImpl<>(list.subList(start, end), pageable, list.size());
-        int startPage=1;
-        int endPage=1;
-        if(list.size()!=0) {
-            if(page.getTotalPages()<11){
-                endPage = page.getTotalPages();
-            }else{
-                if(page.getPageable().getPageNumber()<10){
-                    endPage=10;
-                }else{
-                    startPage=(page.getPageable().getPageNumber()/10)*10+1;
-                    endPage = Math.min(page.getTotalPages(), (page.getPageable().getPageNumber() / 10) * 10 + 10);
-                }
-            }
-        }
+
+        // list 를 page 로 바꾸는 작업
+        Page page = postService.listToPage(pageable, list);
+        List<Integer> startEndPage = postService.setStartEndPage(page,list);
+
         model.addAttribute("searchResult", postService.checkSearchResult(searchText, address));
         model.addAttribute("address", address);
         model.addAttribute("searchText", searchText);
         model.addAttribute("list", page);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
+        model.addAttribute("startPage", startEndPage.get(0));
+        model.addAttribute("endPage", startEndPage.get(1));
+
         return "/post/list";
     }
 
@@ -73,9 +62,11 @@ public class    PostController {
         if(clickCount==-1) clickCount = postService.setClickCount(postNo, clickCount);  // modify 에서 넘어올경우 파라미터 초기화
         Post post = postService.findPostByIdandUpdateClickCount(postNo,clickCount); // detail page 로 올경우 조회수도 같이 증가.
         log.info("컨트롤러 Post={}",post);
+
         model.addAttribute("post", post);
         model.addAttribute("nickname", post.getMember().getNickname());
         model.addAttribute("member", post.getMember());
+
         return "/post/detail";
     }
 
@@ -95,6 +86,7 @@ public class    PostController {
         postService.insertPost(dto, member, files);
 
         attrs.addAttribute("address", member.getAddress());
+
         return "redirect:/api/posts";
     }
 
@@ -113,7 +105,9 @@ public class    PostController {
     @GetMapping("/modify")
     public String modify(Model model, Integer id){
         Post post = postService.findPostByPostNo(id);
+
         model.addAttribute("post", post);
+
         return "/post/modify";
     }
 
@@ -121,7 +115,9 @@ public class    PostController {
     @PostMapping("/modify")
     public String modify(PostUpdateDto dto,RedirectAttributes attrs, @RequestParam("files") List<MultipartFile> files){
         Integer postNo = postService.modifyPost(dto);
+
         attrs.addAttribute("postNo",postNo);
+
         return "redirect:/api/detail";
     }
 }
