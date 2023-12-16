@@ -42,7 +42,7 @@ public class Member {
     @Column
     private String phone;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String email;
 
     @Column(name= "email_key")
