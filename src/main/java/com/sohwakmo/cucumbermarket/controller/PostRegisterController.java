@@ -2,7 +2,6 @@ package com.sohwakmo.cucumbermarket.controller;
 
 import com.sohwakmo.cucumbermarket.domain.Post;
 import com.sohwakmo.cucumbermarket.service.PostService;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class PostRegisterController {
     @DeleteMapping("/{imageSrc}")
     public ResponseEntity<String> deleteImage(@PathVariable String imageSrc) throws Exception{
         log.info("src={}", imageSrc);
-        String result = postService.chekImageNumandDeleteImage(imageSrc);
+        String result = postService.checkImageNumAndDeleteImage(imageSrc);
         log.info(result);
         return ResponseEntity.ok("성공");
     }
