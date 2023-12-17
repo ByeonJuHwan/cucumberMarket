@@ -82,4 +82,22 @@ public class Post extends BaseTimeEntity {
         this.imageName02 = fileName;
         this.imageUrl02 = "/files/" + fileName;
     }
+
+    /**
+     * 1번 이미지란이 비어있으면 1번이미지에
+     * 아니면 2번 이미지로 저장
+     */
+    public void saveImage(String fileName) {
+        if (isImageEmpty()) {
+
+        }
+    }
+
+    /**
+     * 게시판 객체의 이미지 파일 경로, 파일 이름 란이 비어있는지 확인
+     * @return
+     */
+    private boolean isImageEmpty() {
+        return true;
+    }
 }
