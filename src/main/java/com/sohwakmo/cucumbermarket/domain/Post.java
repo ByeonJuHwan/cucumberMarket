@@ -73,4 +73,13 @@ public class Post extends BaseTimeEntity {
         this.clickCount = clickCount;
         return this;
     }
+
+    public void saveImage01NameAndUrl(String fileName) {
+        this.imageName01 = fileName;
+        this.imageUrl01 = "/files/" + fileName;
+    }
+    public void saveImage02NameAndUrl(String fileName) {
+        this.imageName02 = fileName;
+        this.imageUrl02 = "/files/" + fileName;
+    }
 }

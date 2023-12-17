@@ -167,11 +167,9 @@ public class PostService {
         for (MultipartFile multipartFile : files) {
             String fileName = saveImage(multipartFile); // 이미지 생성,저장 메서드
             if(post.getImageUrl01()==null){
-                post.setImageUrl01("/files/"+fileName);
-                post.setImageName01(fileName);
+                post.saveImage01NameAndUrl(fileName);
             }else{
-                post.setImageUrl02("/files/"+fileName);
-                post.setImageName02(fileName);
+                post.saveImage02NameAndUrl(fileName);
             }
         }
         postRepository.save(post);
@@ -234,15 +232,13 @@ public class PostService {
             if (post2.getImageName01() == null || !post2.getImageName01().equals(post2.getImageName02())) {
                 extractImage(imageSrc);
             }
-            post2.setImageUrl02("");
-            post2.setImageName02("");
+            post2.saveImage02NameAndUrl("");
             return "2번사진 삭제완료";
         }else{
             if (post.getImageName02()==null || !post.getImageName01().equals(post.getImageName02())) {
                 extractImage(imageSrc);
             }
-            post.setImageName01("");
-            post.setImageUrl01("");
+            post.saveImage01NameAndUrl("");
             return "1번사진 삭제완료";
         }
     }
@@ -265,20 +261,18 @@ public class PostService {
             extractImage(post.getImageName01());
         }
         log.info(fileName);
-        post.setImageName01(fileName);
-        post.setImageUrl01("/files/"+fileName);
+        post.saveImage01NameAndUrl(fileName);
         return "files/"+fileName;
     }
 
-    @Transactional()
+    @Transactional
     public String modifyImage02(Post post, MultipartFile data)throws Exception {
         String fileName = saveImage(data);
         if (!post.getImageName01().equals(post.getImageName02())) {
             extractImage(post.getImageName02());
         }
         log.info(fileName);
-        post.setImageUrl02("/files/"+fileName);
-        post.setImageName02(fileName);
+        post.saveImage02NameAndUrl(fileName);
         return "files/"+fileName;
     }
 
@@ -288,12 +282,10 @@ public class PostService {
         String fileName = saveImage(data);
         if(post.getImageUrl01()==null) {
             log.info(fileName);
-            post.setImageUrl01("/files/"+fileName);
-            post.setImageName01(fileName);
+            post.saveImage01NameAndUrl(fileName);
             return "1번이미지 삽입 완료";
         }else {
-            post.setImageUrl02("/files/"+fileName);
-            post.setImageName02(fileName);
+            post.saveImage02NameAndUrl(fileName);
             return "2번이미지 삽입 완료";
         }
 
