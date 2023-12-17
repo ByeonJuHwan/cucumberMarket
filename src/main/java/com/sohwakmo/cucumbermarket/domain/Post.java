@@ -5,12 +5,11 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 
+import static lombok.AccessLevel.*;
+
 @Entity(name = "POST")
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = PROTECTED)
 @Getter
-@Setter
 @SequenceGenerator(name = "POSTS_SEQ_GEN",sequenceName = "POST_SEQ", allocationSize = 1)
 public class Post extends BaseTimeEntity {
 
@@ -38,6 +37,31 @@ public class Post extends BaseTimeEntity {
     private String imageUrl02;
 
     private String imageName02;
+
+    @Builder
+    public Post(String title, String content, Member member, Integer clickCount, String imageUrl01, String imageName01, String imageUrl02, String imageName02) {
+        this.title = title;
+        this.content = content;
+        this.member = member;
+        this.clickCount = clickCount;
+        this.imageUrl01 = imageUrl01;
+        this.imageName01 = imageName01;
+        this.imageUrl02 = imageUrl02;
+        this.imageName02 = imageName02;
+    }
+
+    @Builder
+    public Post(Integer postNo, String title, String content, Member member, Integer clickCount, String imageUrl01, String imageName01, String imageUrl02, String imageName02) {
+        this.postNo = postNo;
+        this.title = title;
+        this.content = content;
+        this.member = member;
+        this.clickCount = clickCount;
+        this.imageUrl01 = imageUrl01;
+        this.imageName01 = imageName01;
+        this.imageUrl02 = imageUrl02;
+        this.imageName02 = imageName02;
+    }
 
     public Post update(String title, String content) {
         this.title = title;
