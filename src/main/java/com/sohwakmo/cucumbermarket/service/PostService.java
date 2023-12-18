@@ -280,13 +280,7 @@ public class PostService {
     @Transactional
     public String insertImage(Post post, MultipartFile data)throws Exception {
         String fileName = saveImage(data);
-        if(post.getImageUrl01()==null || post.getImageUrl01().equals("")) {
-            post.saveImage01NameAndUrl(fileName);
-            return "1번이미지 삽입 완료";
-        }else {
-            post.saveImage02NameAndUrl(fileName);
-            return "2번이미지 삽입 완료";
-        }
+        return post.saveImage(fileName);
     }
 }
 

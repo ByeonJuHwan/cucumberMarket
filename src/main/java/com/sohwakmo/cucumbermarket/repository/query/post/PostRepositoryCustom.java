@@ -1,7 +1,7 @@
 package com.sohwakmo.cucumbermarket.repository.query.post;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.sohwakmo.cucumbermarket.domain.Post;
 
 public interface PostRepositoryCustom {
-
+    Post selectPostByImageSrc(String fileName);
 }
