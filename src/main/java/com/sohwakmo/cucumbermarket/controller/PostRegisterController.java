@@ -16,12 +16,9 @@ public class PostRegisterController {
 
     private final PostService postService;
 
-    @DeleteMapping("/{imageSrc}")
-    public ResponseEntity<String> deleteImage(@PathVariable String imageSrc) throws Exception{
-        log.info("src={}", imageSrc);
-        String result = postService.checkImageNumAndDeleteImage(imageSrc);
-        log.info(result);
-        return ResponseEntity.ok("성공");
+    @PutMapping("/3{postNo}")
+    public ResponseEntity<String>insertImage(@PathVariable Integer postNo, @RequestParam("file") @RequestBody MultipartFile data) throws Exception {
+        return ResponseEntity.ok(postService.insertImage(postNo,data));
     }
 
     @PutMapping("/1{postNo}")
@@ -44,16 +41,11 @@ public class PostRegisterController {
         return ResponseEntity.ok(fileName);
     }
 
-    @PutMapping("/3{postNo}")
-    public ResponseEntity<String>insertImage(@PathVariable Integer postNo, @RequestParam("file") @RequestBody MultipartFile data) throws Exception {
-        log.info("data={}", data);
-        log.info("postNo={}", postNo);
-        Post post = postService.findPostByPostNo(postNo);
-        if (post.getImageUrl01() != null && post.getImageUrl02() != null) {
-            return ResponseEntity.ok("사진은 2장까지 가능합니다!!");
-        } else {
-            String result = postService.insertImage(post, data);
-            return ResponseEntity.ok(result);
-        }
+    @DeleteMapping("/{imageSrc}")
+    public ResponseEntity<String> deleteImage(@PathVariable String imageSrc) throws Exception{
+        log.info("src={}", imageSrc);
+        String result = postService.checkImageNumAndDeleteImage(imageSrc);
+        log.info(result);
+        return ResponseEntity.ok("성공");
     }
 }

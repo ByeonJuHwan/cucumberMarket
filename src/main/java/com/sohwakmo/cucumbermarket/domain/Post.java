@@ -88,6 +88,7 @@ public class Post extends BaseTimeEntity {
      * 아니면 2번 이미지로 저장
      */
     public String saveImage(String fileName) {
+        if (isUrlBothFull()) return "사진은 2장까지 가능합니다!!";
         if (isImage01Empty()) {
             this.imageName01 = fileName;
             this.imageUrl01 = "/files/" + fileName;
@@ -97,6 +98,14 @@ public class Post extends BaseTimeEntity {
             this.imageUrl02 = "/files/" + fileName;
             return "2번이미지 삽입 완료";
         }
+    }
+
+    /**
+     * 사진 url 이 전부 다 꽉차있는경우
+     * @return
+     */
+    private boolean isUrlBothFull() {
+        return (imageUrl01 != null && !imageUrl01.equals("")) && (imageUrl02 != null && !imageUrl02.equals(""));
     }
 
     /**

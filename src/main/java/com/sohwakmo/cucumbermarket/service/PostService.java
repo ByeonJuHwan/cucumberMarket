@@ -10,6 +10,7 @@ import com.sohwakmo.cucumbermarket.repository.MemberRepository;
 import com.sohwakmo.cucumbermarket.repository.PostRepository;
 
 import com.sohwakmo.cucumbermarket.repository.ReplyRepository;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -185,7 +186,6 @@ public class PostService {
     }
 
 
-
     public void deletePost(Integer id) {
         List<Reply>list = replyRepository.findByPostPostNoOrderByReplyNoDesc(id).stream().toList();
         for(Reply r : list){
@@ -206,55 +206,27 @@ public class PostService {
         return post.getPostNo();
     }
 
+// ---------------------RestController 에서 온 api
 
-    private  String saveImage(MultipartFile files) throws IOException {
-        String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
-
-        String fileName = files.getOriginalFilename();
-
-        File saveFile = new File(projectPath, fileName);
-
-        files.transferTo(saveFile);
-        return fileName;
-    }
-
-    /**
-     * 사진 삭제를 누를경우 사진 삭제를 바로바로 해준다.
-     * @param imageSrc
-     * @return 몇번 사진을 삭제했는지 알려준다.
-     * @throws Exception
-     */
-    @Transactional
-    public String checkImageNumAndDeleteImage(String imageSrc) throws Exception{
-        Post post =  postRepository.findByImageName01(imageSrc);
-        if(post == null){
-            Post post2 = postRepository.findByImageName02(imageSrc);
-            if (post2.getImageName01() == null || !post2.getImageName01().equals(post2.getImageName02())) {
-                extractImage(imageSrc);
-            }
-            post2.saveImage02NameAndUrl("");
-            return "2번사진 삭제완료";
-        }else{
-            if (post.getImageName02()==null || !post.getImageName01().equals(post.getImageName02())) {
-                extractImage(imageSrc);
-            }
-            post.saveImage01NameAndUrl("");
-            return "1번사진 삭제완료";
+    /*
+         Post post = postService.findPostByPostNo(postNo);
+        if (post.getImageUrl01() != null && post.getImageUrl02() != null) {
+            return ResponseEntity.ok("사진은 2장까지 가능합니다!!");
+        } else {
+            String result = postService.insertImage(post, data);
+            return ResponseEntity.ok(result);
         }
-    }
-
-    /**
-     * static  폴더 안에 있는 사진 경로를 찾아내서 삭제
-     * @param imageSrc 전달받은 이미지 경로
-     * @throws IOException
      */
-    private void extractImage(String imageSrc) throws IOException {
-        // 경로는 능동적으로 변경
-        Path filePath = Paths.get(System.getProperty("user.dir")+"\\src\\main\\resources\\static\\files\\" + imageSrc);
-        Files.delete(filePath);
+
+    @Transactional
+    public String insertImage(Integer postNo, MultipartFile data)throws Exception {
+        String fileName = saveImage(data);
+        Post post = postRepository.findById(postNo)
+                .orElseThrow(() -> new NotFoundException("게시물이 없습니다 : " + postNo));
+        return post.saveImage(fileName);
     }
 
-    @Transactional()
+    @Transactional
     public String modifyImage01(Post post, MultipartFile data)throws Exception {
         String fileName = saveImage(data);
         if (!post.getImageName01().equals(post.getImageName02())) {
@@ -276,11 +248,53 @@ public class PostService {
         return "files/"+fileName;
     }
 
-
+    /**
+     * 사진 삭제를 누를경우 사진 삭제를 바로바로 해준다.
+     * @param imageSrc
+     * @return 몇번 사진을 삭제했는지 알려준다.
+     * @throws Exception
+     */
     @Transactional
-    public String insertImage(Post post, MultipartFile data)throws Exception {
-        String fileName = saveImage(data);
-        return post.saveImage(fileName);
+    public String checkImageNumAndDeleteImage(String imageSrc) throws Exception{
+
+
+
+        Post post =  postRepository.findByImageName01(imageSrc);
+        if(post == null){
+            Post post2 = postRepository.findByImageName02(imageSrc);
+            if (post2.getImageName01() == null || !post2.getImageName01().equals(post2.getImageName02())) {
+                extractImage(imageSrc);
+            }
+            post2.saveImage02NameAndUrl("");
+            return "2번사진 삭제완료";
+        }else{
+            if (post.getImageName02()==null || !post.getImageName01().equals(post.getImageName02())) {
+                extractImage(imageSrc);
+            }
+            post.saveImage01NameAndUrl("");
+            return "1번사진 삭제완료";
+        }
+    }
+    private  String saveImage(MultipartFile files) throws IOException {
+        String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
+
+        String fileName = files.getOriginalFilename();
+
+        File saveFile = new File(projectPath, fileName);
+
+        files.transferTo(saveFile);
+        return fileName;
+    }
+
+    /**
+     * static  폴더 안에 있는 사진 경로를 찾아내서 삭제
+     * @param imageSrc 전달받은 이미지 경로
+     * @throws IOException
+     */
+    private void extractImage(String imageSrc) throws IOException {
+        // 경로는 능동적으로 변경
+        Path filePath = Paths.get(System.getProperty("user.dir")+"\\src\\main\\resources\\static\\files\\" + imageSrc);
+        Files.delete(filePath);
     }
 }
 
