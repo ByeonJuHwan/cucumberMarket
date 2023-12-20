@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -222,28 +223,26 @@ public class PostService {
     public String insertImage(Integer postNo, MultipartFile data)throws Exception {
         String fileName = saveImage(data);
         Post post = postRepository.findById(postNo)
-                .orElseThrow(() -> new NotFoundException("게시물이 없습니다 : " + postNo));
+                .orElseThrow(() -> new EntityNotFoundException("게시물이 없습니다 : " + postNo));
         return post.saveImage(fileName);
     }
 
     @Transactional
-    public String modifyImage01(Post post, MultipartFile data)throws Exception {
+    public String modifyImage01(Integer postNo, MultipartFile data)throws Exception {
         String fileName = saveImage(data);
-        if (!post.getImageName01().equals(post.getImageName02())) {
-            extractImage(post.getImageName01());
-        }
-        log.info(fileName);
+        Post post = postRepository.findById(postNo)
+                .orElseThrow(() -> new EntityNotFoundException("게시물이 없습니다 : " + postNo));
+        extractImage(post.getImageName01());
         post.saveImage01NameAndUrl(fileName);
         return "files/"+fileName;
     }
 
     @Transactional
-    public String modifyImage02(Post post, MultipartFile data)throws Exception {
+    public String modifyImage02(Integer postNo, MultipartFile data)throws Exception {
         String fileName = saveImage(data);
-        if (!post.getImageName01().equals(post.getImageName02())) {
-            extractImage(post.getImageName02());
-        }
-        log.info(fileName);
+        Post post = postRepository.findById(postNo)
+                .orElseThrow(() -> new EntityNotFoundException("게시물이 없습니다 : " + postNo));
+        extractImage(post.getImageName02());
         post.saveImage02NameAndUrl(fileName);
         return "files/"+fileName;
     }
