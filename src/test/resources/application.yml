@@ -1,0 +1,36 @@
+# server port
+server:
+  port: 8889
+
+# Data Source
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/cucumber
+    username: sa
+    password:
+  data:
+    rest:
+      base-path: /api
+      detection-strategy: annotated
+  devtools:
+    livereload:
+      enabled: true
+  freemarker:
+    cache: false
+# Spring Data JPA(Java Persistence API)
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        #show_sql: true
+        format_sql: true
+
+# Logging level
+logging.level:
+  org.hibernate.SQL: debug
+
+#kakao login password
+cos.key: cos1234
+
