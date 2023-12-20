@@ -3,9 +3,12 @@ package com.sohwakmo.cucumbermarket.domain;
 
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
 
 import static lombok.AccessLevel.*;
+import static org.springframework.util.StringUtils.*;
 
 @Entity(name = "POST")
 @NoArgsConstructor(access = PROTECTED)
@@ -105,7 +108,7 @@ public class Post extends BaseTimeEntity {
      * @return
      */
     private boolean isUrlBothFull() {
-        return (imageUrl01 != null && !imageUrl01.equals("")) && (imageUrl02 != null && !imageUrl02.equals(""));
+        return hasText(imageUrl01) && hasText(imageUrl02);
     }
 
     /**
@@ -113,6 +116,6 @@ public class Post extends BaseTimeEntity {
      * @return
      */
     private boolean isImage01Empty() {
-        return this.imageUrl01==null || this.imageUrl01.equals("");
+        return !hasText(imageName01);
     }
 }
