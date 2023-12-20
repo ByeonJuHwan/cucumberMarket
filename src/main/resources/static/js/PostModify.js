@@ -50,27 +50,42 @@ image2.addEventListener("click", function () {
 
 const deleteImage01Button = document.querySelector("#deleteImage01Button");
 deleteImage01Button.addEventListener("click", function () {
+  const postNo = document.querySelector("#postNo").value;
   let imageSrc = image1.src;
-  imageSrc = imageSrc.substr(32);
+//  alert(imageSrc);
+  imageSrc = imageSrc.substring(imageSrc.lastIndexOf('/') + 1);
+//alert(imageSrc);
+  const data = { imageSrc: imageSrc};
 
   axios
-    .delete("/post/reply/" + imageSrc)
-    .then((response) => {
-      alert("사진이 삭제되었습니다.");
-      location.reload();
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-});
+      .delete(`/post/reply/${postNo}?imageSrc=${imageSrc}`, {
+         headers: {
+            "Content-Type": `application/json`,
+         },
+      })
+      .then((response) => {
+        alert("사진이 삭제되었습니다.");
+        location.reload();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  })
 
 const deleteImage02Button = document.querySelector("#deleteImage02Button");
 deleteImage02Button.addEventListener("click", function () {
+  const postNo = document.querySelector("#postNo").value;
   let imageSrc = image2.src;
   imageSrc = imageSrc.substr(32);
 
+  const data = { imageSrc: imageSrc};
+
   axios
-    .delete("/post/reply/" + imageSrc)
+    .delete("/post/reply/" + postNo, data, {
+       headers: {
+          "Content-Type": `application/json`,
+       },
+    })
     .then((response) => {
       alert("사진이 삭제되었습니다.");
       location.reload();
@@ -95,7 +110,7 @@ modifyFile01.addEventListener("change", function () {
       },
     })
     .then((response) => {
-      image1.src = "http://192.168.20.28:8889/" + response.data;
+      image1.src = "http://localhost:8889/" + response.data;
       location.reload();
     })
     .catch((error) => {
@@ -118,7 +133,7 @@ modifyFile02.addEventListener("change", function () {
       },
     })
     .then((response) => {
-      image1.src = "http://192.168.20.28:8889/" + response.data;
+      image1.src = "http://localhost:8889/" + response.data;
       location.reload();
     })
     .catch((error) => {
