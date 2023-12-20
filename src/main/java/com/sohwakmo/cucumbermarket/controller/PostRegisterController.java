@@ -33,11 +33,9 @@ public class PostRegisterController {
         return ResponseEntity.ok(fileName);
     }
 
-    @DeleteMapping("/{imageSrc}")
-    public ResponseEntity<String> deleteImage(@PathVariable String imageSrc) throws Exception{
-        log.info("src={}", imageSrc);
-        String result = postService.checkImageNumAndDeleteImage(imageSrc);
-        log.info(result);
+    @DeleteMapping("/{postNo}")
+    public ResponseEntity<String> deleteImage(@PathVariable Integer postNo, @RequestParam("imageSrc") String imageSrc) throws Exception{
+        String result = postService.checkImageNumAndDeleteImage(postNo,imageSrc);
         return ResponseEntity.ok("성공");
     }
 }
