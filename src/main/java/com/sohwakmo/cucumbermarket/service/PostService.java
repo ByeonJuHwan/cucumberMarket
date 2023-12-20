@@ -254,25 +254,17 @@ public class PostService {
      * @throws Exception
      */
     @Transactional
-    public String checkImageNumAndDeleteImage(String imageSrc) throws Exception{
-
-
-
-        Post post =  postRepository.findByImageName01(imageSrc);
-        if(post == null){
-            Post post2 = postRepository.findByImageName02(imageSrc);
-            if (post2.getImageName01() == null || !post2.getImageName01().equals(post2.getImageName02())) {
-                extractImage(imageSrc);
-            }
-            post2.saveImage02NameAndUrl("");
-            return "2번사진 삭제완료";
-        }else{
-            if (post.getImageName02()==null || !post.getImageName01().equals(post.getImageName02())) {
-                extractImage(imageSrc);
-            }
+    public String checkImageNumAndDeleteImage(Integer postNo,String imageSrc) throws Exception{
+        Post post = postRepository.findById(postNo)
+                .orElseThrow(() -> new EntityNotFoundException("게시물이 없습니다 : " + postNo));
+        if (post.getImageName01().equals(imageSrc)) {
+            extractImage(imageSrc);
             post.saveImage01NameAndUrl("");
-            return "1번사진 삭제완료";
+        }else{
+            extractImage(imageSrc);
+            post.saveImage02NameAndUrl("");
         }
+        return null;
     }
     private  String saveImage(MultipartFile files) throws IOException {
         String projectPath = System.getProperty("user.dir") + "/src/main/resources/static/files";
@@ -292,7 +284,8 @@ public class PostService {
      */
     private void extractImage(String imageSrc) throws IOException {
         // 경로는 능동적으로 변경
-        Path filePath = Paths.get(System.getProperty("user.dir")+"\\src\\main\\resources\\static\\files\\" + imageSrc);
+        //http://localhost:8889/files/back.jpeg
+        Path filePath = Paths.get(System.getProperty("user.dir")+"/src/main/resources/static/files/" + imageSrc);
         Files.delete(filePath);
     }
 }
