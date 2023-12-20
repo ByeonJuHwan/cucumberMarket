@@ -23,21 +23,13 @@ public class PostRegisterController {
 
     @PutMapping("/1{postNo}")
     public ResponseEntity<String>modifyImage01(@PathVariable Integer postNo,@RequestParam("file")@RequestBody MultipartFile data)throws Exception{
-        log.info("file={}",data.getResource());
-        Post post = postService.findPostByPostNo(postNo);
-        log.info(post.toString());
-        String fileName = postService.modifyImage01(post,data);
-        log.info(fileName);
+        String fileName = postService.modifyImage01(postNo,data);
         return ResponseEntity.ok(fileName);
     }
 
     @PutMapping("/2{postNo}")
     public ResponseEntity<String>modifyImage02(@PathVariable Integer postNo,@RequestParam("file")@RequestBody MultipartFile data)throws Exception{
-        log.info("file={}",data.getResource());
-        Post post = postService.findPostByPostNo(postNo);
-        log.info(post.toString());
-        String fileName = postService.modifyImage02(post,data);
-        log.info(fileName);
+        String fileName = postService.modifyImage02(postNo, data);
         return ResponseEntity.ok(fileName);
     }
 
