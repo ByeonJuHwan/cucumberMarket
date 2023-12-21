@@ -5,9 +5,10 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+import static javax.persistence.FetchType.*;
+import static lombok.AccessLevel.*;
+
+@NoArgsConstructor(access = PROTECTED)
 @Getter
 @ToString(exclude = {"post"}) // 필드 post, member는 toString()에서 제외
 @Entity(name = "REPLY") // 테이블명
@@ -18,7 +19,8 @@ public class Reply extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REPLY_SEQ_GEN")
     private Integer replyNo; // Reply 고유키
 
-    @ManyToOne(fetch = FetchType.LAZY) // 다대일 관계
+    @ManyToOne(fetch = LAZY) // 다대일 관계
+    @JoinColumn(name = "postNo")
     private Post post;
 
     @Column(nullable = false, length = 1000)
@@ -40,6 +42,20 @@ public class Reply extends BaseTimeEntity {
     
     @Column
     private String userURL; // 유저 사진
+
+    @Builder
+    public Reply(Integer replyNo, Post post, String replyContent, String replier, boolean secretReply, Integer likeCount, Integer parent, Integer parentReplyNo, String userURL) {
+        this.replyNo = replyNo;
+        this.post = post;
+        post.getReplies().add(this);
+        this.replyContent = replyContent;
+        this.replier = replier;
+        this.secretReply = secretReply;
+        this.likeCount = likeCount;
+        this.parent = parent;
+        this.parentReplyNo = parentReplyNo;
+        this.userURL = userURL;
+    }
 
     public Reply update(String replyContent) {
         this.replyContent = replyContent;

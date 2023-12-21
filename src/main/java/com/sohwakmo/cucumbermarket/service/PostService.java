@@ -168,11 +168,7 @@ public class PostService {
     public void createPost(Post post, List<MultipartFile> files)throws Exception{
         for (MultipartFile multipartFile : files) {
             String fileName = saveImage(multipartFile); // 이미지 생성,저장 메서드
-            if(post.getImageUrl01()==null){
-                post.saveImage01NameAndUrl(fileName);
-            }else{
-                post.saveImage02NameAndUrl(fileName);
-            }
+            post.saveImage(fileName);
         }
         postRepository.save(post);
     }
@@ -188,10 +184,10 @@ public class PostService {
 
 
     public void deletePost(Integer id) {
-        List<Reply>list = replyRepository.findByPostPostNoOrderByReplyNoDesc(id).stream().toList();
-        for(Reply r : list){
-            replyRepository.delete(r);
-        }
+//        List<Reply>list = replyRepository.findByPostPostNoOrderByReplyNoDesc(id).stream().toList();
+//        for(Reply r : list){
+//            replyRepository.delete(r);
+//        }
         postRepository.deleteById(id);
     }
 
@@ -208,16 +204,6 @@ public class PostService {
     }
 
 // ---------------------RestController 에서 온 api
-
-    /*
-         Post post = postService.findPostByPostNo(postNo);
-        if (post.getImageUrl01() != null && post.getImageUrl02() != null) {
-            return ResponseEntity.ok("사진은 2장까지 가능합니다!!");
-        } else {
-            String result = postService.insertImage(post, data);
-            return ResponseEntity.ok(result);
-        }
-     */
 
     @Transactional
     public String insertImage(Integer postNo, MultipartFile data)throws Exception {
@@ -284,7 +270,6 @@ public class PostService {
      */
     private void extractImage(String imageSrc) throws IOException {
         // 경로는 능동적으로 변경
-        //http://localhost:8889/files/back.jpeg
         Path filePath = Paths.get(System.getProperty("user.dir")+"/src/main/resources/static/files/" + imageSrc);
         Files.delete(filePath);
     }

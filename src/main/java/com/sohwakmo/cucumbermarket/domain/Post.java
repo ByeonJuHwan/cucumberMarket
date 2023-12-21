@@ -7,6 +7,9 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static lombok.AccessLevel.*;
 import static org.springframework.util.StringUtils.*;
 
@@ -27,8 +30,12 @@ public class Post extends BaseTimeEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "memberNo")
     @ToString.Exclude
     private Member member;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reply> replies = new ArrayList<>();
 
     @ColumnDefault("0")
     private Integer clickCount;
@@ -41,24 +48,14 @@ public class Post extends BaseTimeEntity {
 
     private String imageName02;
 
-    @Builder
-    public Post(String title, String content, Member member, Integer clickCount, String imageUrl01, String imageName01, String imageUrl02, String imageName02) {
-        this.title = title;
-        this.content = content;
-        this.member = member;
-        this.clickCount = clickCount;
-        this.imageUrl01 = imageUrl01;
-        this.imageName01 = imageName01;
-        this.imageUrl02 = imageUrl02;
-        this.imageName02 = imageName02;
-    }
 
     @Builder
-    public Post(Integer postNo, String title, String content, Member member, Integer clickCount, String imageUrl01, String imageName01, String imageUrl02, String imageName02) {
+    public Post(Integer postNo, String title, String content, Member member, List<Reply> replies, Integer clickCount, String imageUrl01, String imageName01, String imageUrl02, String imageName02) {
         this.postNo = postNo;
         this.title = title;
         this.content = content;
         this.member = member;
+        this.replies = (replies != null) ? replies : new ArrayList<>();
         this.clickCount = clickCount;
         this.imageUrl01 = imageUrl01;
         this.imageName01 = imageName01;
