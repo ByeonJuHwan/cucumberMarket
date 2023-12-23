@@ -184,10 +184,6 @@ public class PostService {
 
 
     public void deletePost(Integer id) {
-//        List<Reply>list = replyRepository.findByPostPostNoOrderByReplyNoDesc(id).stream().toList();
-//        for(Reply r : list){
-//            replyRepository.delete(r);
-//        }
         postRepository.deleteById(id);
     }
 
