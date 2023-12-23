@@ -154,9 +154,7 @@ public class PostService {
     public void insertPost(PostCreateDto dto, Member member, List<MultipartFile> files) throws Exception {
         Post post = PostCreateDto.builder()
                 .title(dto.getTitle()).content(dto.getContent()).clickCount(dto.getClickCount()).member(member).build().toEntity();
-
-        if(files.stream().findFirst().get().isEmpty())createPost(post); // 사진은 안넣은 경우
-        else createPost(post,files); // 사진도 넣은경우
+        createPost(post,files);
     }
 
     /**
@@ -166,23 +164,14 @@ public class PostService {
      * @throws Exception 사진이 있냐 없냐 에따라 exception 발생
      */
     public void createPost(Post post, List<MultipartFile> files)throws Exception{
-        for (MultipartFile multipartFile : files) {
-            String fileName = saveImage(multipartFile); // 이미지 생성,저장 메서드
-            post.saveImage(fileName);
+        if (files.stream().findFirst().isPresent()) {
+            for (MultipartFile multipartFile : files) {
+                String fileName = saveImage(multipartFile);
+                post.saveImage(fileName);
+            }
         }
         postRepository.save(post);
     }
-
-    /**
-     * 사진을 넣지않는 일반적인 게시물
-     *
-     * @param post 제목,내용
-     */
-    public void createPost(Post post){
-        postRepository.save(post);
-    }
-
-
     public void deletePost(Integer id) {
         postRepository.deleteById(id);
     }
