@@ -187,8 +187,9 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public Post findPostByPostNo(Integer postNO) {
-        return postRepository.findById(postNO).orElse(null);
+    public Post findPostByPostNo(Integer postNo) {
+        return postRepository.findById(postNo)
+                .orElseThrow(() -> new EntityNotFoundException("게시물이 없습니다 : " + postNo));
     }
 
     @Transactional
