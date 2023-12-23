@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface PostRepositoryCustom {
     Post selectPostByImageSrc(String fileName);
-    Page<SearchPostDto> selectPostBySearch(String searchString, Pageable pageable);
+    Page<SearchPostDto> selectPostBySearch(String searchString, String address,Pageable pageable);
 }

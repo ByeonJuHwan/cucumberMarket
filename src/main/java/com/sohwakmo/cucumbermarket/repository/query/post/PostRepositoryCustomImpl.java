@@ -31,7 +31,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
     }
 
     @Override
-    public Page<SearchPostDto> selectPostBySearch(String searchString, Pageable pageable) {
+    public Page<SearchPostDto> selectPostBySearch(String searchString, String address,Pageable pageable) {
         List<SearchPostDto> result = queryFactory
                 .select(Projections.constructor(
                         SearchPostDto.class,
@@ -45,6 +45,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
                         post.title.upper().like(searchString)
                                 .or(post.content.upper().like(searchString))
                                 .or(post.member.nickname.upper().like(searchString))
+                                .and(post.member.address.eq(address))
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
