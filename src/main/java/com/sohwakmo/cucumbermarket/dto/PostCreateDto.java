@@ -10,7 +10,6 @@ import javax.validation.constraints.Size;
 
 @Data
 @Builder
-
 public class PostCreateDto {
 
     @NotNull

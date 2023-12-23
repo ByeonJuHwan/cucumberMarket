@@ -11,22 +11,17 @@ import com.sohwakmo.cucumbermarket.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -60,9 +55,7 @@ public class    PostController {
     @GetMapping("/detail")
     public String detail(Model model, @RequestParam Integer postNo,@RequestParam(required = false, defaultValue = "-1")Integer clickCount){
         if(clickCount==-1) clickCount = postService.setClickCount(postNo, clickCount);  // modify 에서 넘어올경우 파라미터 초기화
-        Post post = postService.findPostByIdandUpdateClickCount(postNo,clickCount); // detail page 로 올경우 조회수도 같이 증가.
-        log.info("컨트롤러 Post={}",post);
-
+        Post post = postService.findPostByIdAndUpdateClickCount(postNo,clickCount); // detail page 로 올경우 조회수도 같이 증가.
         model.addAttribute("post", post);
         model.addAttribute("nickname", post.getMember().getNickname());
         model.addAttribute("member", post.getMember());

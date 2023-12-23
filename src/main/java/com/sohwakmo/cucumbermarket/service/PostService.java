@@ -2,7 +2,6 @@ package com.sohwakmo.cucumbermarket.service;
 
 import com.sohwakmo.cucumbermarket.domain.Member;
 import com.sohwakmo.cucumbermarket.domain.Post;
-import com.sohwakmo.cucumbermarket.domain.Reply;
 import com.sohwakmo.cucumbermarket.dto.PostCreateDto;
 import com.sohwakmo.cucumbermarket.dto.PostReadDto;
 import com.sohwakmo.cucumbermarket.dto.PostUpdateDto;
@@ -10,7 +9,6 @@ import com.sohwakmo.cucumbermarket.repository.MemberRepository;
 import com.sohwakmo.cucumbermarket.repository.PostRepository;
 
 import com.sohwakmo.cucumbermarket.repository.ReplyRepository;
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -139,17 +137,14 @@ public class PostService {
     }
 
     @Transactional
-    public Post findPostByIdandUpdateClickCount(Integer id, Integer clickCount) {
-         Post post = postRepository.findById(id).orElse(null);
-         post = post.plusClickCount(clickCount + 1);
-         return post;
+    public Post findPostByIdAndUpdateClickCount(Integer postNo, Integer clickCount) {
+        Post post = postRepository.findById(postNo)
+                .orElseThrow(() -> new EntityNotFoundException("게시물이 없습니다 : " + postNo));
+        return post.plusClickCount(clickCount);
     }
 
     /**
      * 글 작성시 post 객체를 생성해서 DB에 저장
-     * @param dto
-     * @param member
-     * @param files
      */
     public void insertPost(PostCreateDto dto, Member member, List<MultipartFile> files) throws Exception {
         Post post = PostCreateDto.builder()
@@ -157,12 +152,6 @@ public class PostService {
         createPost(post,files);
     }
 
-    /**
-     * 사진을 넣고 작성을한경우
-     * @param post  제목, 내용
-     * @param files 사진
-     * @throws Exception 사진이 있냐 없냐 에따라 exception 발생
-     */
     public void createPost(Post post, List<MultipartFile> files)throws Exception{
         if (files.stream().findFirst().isPresent()) {
             for (MultipartFile multipartFile : files) {

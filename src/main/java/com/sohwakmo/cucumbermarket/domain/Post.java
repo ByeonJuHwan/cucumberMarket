@@ -70,7 +70,7 @@ public class Post extends BaseTimeEntity {
     }
 
     public Post plusClickCount(Integer clickCount){
-        this.clickCount = clickCount;
+        this.clickCount = clickCount + 1;
         return this;
     }
 
