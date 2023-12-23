@@ -35,13 +35,13 @@ public class    PostController {
     @GetMapping("/posts")
     public String list(Model model, @PageableDefault(size = 10, sort = "postNo", direction = Sort.Direction.DESC) Pageable pageable,
                        @RequestParam(required = false,defaultValue = "")String searchText, @RequestParam(required = false,defaultValue = "전국") String address){
-        List<PostReadDto> list = postService.searchPost(searchText,address);
+        List<PostReadDto> list = postService.searchPost(searchText, address, pageable);
 
         // list 를 page 로 바꾸는 작업
         Page page = postService.listToPage(pageable, list);
         List<Integer> startEndPage = postService.setStartEndPage(page,list);
 
-        model.addAttribute("searchResult", postService.checkSearchResult(searchText, address));
+        model.addAttribute("searchResult", postService.checkSearchResult(searchText, address, pageable));
         model.addAttribute("address", address);
         model.addAttribute("searchText", searchText);
         model.addAttribute("list", page);
