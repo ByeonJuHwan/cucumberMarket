@@ -5,6 +5,7 @@ import com.sohwakmo.cucumbermarket.domain.Post;
 import com.sohwakmo.cucumbermarket.dto.PostCreateDto;
 import com.sohwakmo.cucumbermarket.dto.PostReadDto;
 import com.sohwakmo.cucumbermarket.dto.PostUpdateDto;
+import com.sohwakmo.cucumbermarket.dto.SearchPostDto;
 import com.sohwakmo.cucumbermarket.repository.MemberRepository;
 import com.sohwakmo.cucumbermarket.repository.PostRepository;
 
@@ -38,53 +39,20 @@ public class PostService {
 
     private  final ReplyRepository replyRepository;
 
-    public List<Post> readByClickCountDesc(){
-        log.info("readByClickCountDesc()");
-        return postRepository.findByOrderByClickCountDescPostNoDesc();
-    }
-
     @Transactional(readOnly = true)
     /**
      * 내용, 제목으로 검색해서 결과를 페이지로 가져오기
      * @param searchText 검색 내용
      * @return 결과 페이지들을 리턴
      */
-    public List<PostReadDto> searchPost(String searchText,String address){
+    public Page<SearchPostDto> searchPost(String searchText,String address, Pageable pageable){
         String[] memberAddressArr = address.split(" ");
         address = memberAddressArr[0];
-        List<Post> postList =  postRepository.findByTitleIgnoreCaseContainingOrContentIgnoreCaseContainingOrMemberNicknameIgnoreCaseContainingOrderByPostNoDesc(searchText,searchText,searchText);
-        List<PostReadDto> list = new ArrayList<>();
-        for(Post p : postList){
-            if(address.equals("전국")){
-                Member member = memberRepository.findById(p.getMember().getMemberNo()).get();
-                PostReadDto dto = PostReadDto.builder()
-                        .postNo(p.getPostNo()).title(p.getTitle()).writer(member.getNickname()).createdTime(p.getCreatedTime()).clickCount(p.getClickCount())
-                        .build();
-                list.add(dto);
-            }else {
-                String memberAddress = p.getMember().getAddress();
-                String[] memberDetailAddress = memberAddress.split(" ");
-                if (memberDetailAddress[0].equals(address)) {
-                    Member member = memberRepository.findById(p.getMember().getMemberNo()).get();
-                    PostReadDto dto = PostReadDto.builder()
-                            .postNo(p.getPostNo()).title(p.getTitle()).writer(member.getNickname()).createdTime(p.getCreatedTime()).clickCount(p.getClickCount())
-                            .build();
-                    list.add(dto);
-                }
-            }
-        }
-        return list;
+        return postRepository.selectPostBySearch(searchText,address,pageable);
     }
 
-    /**
-     * 메서드 searchPost() 로 받아온 list 를 리턴
-     * @param searchText 검색어
-     * @param memberAddress 로그인한 유저의 주소
-     * @return 검색 결과가 1개라도 있으면 1 없으면 0
-     */
-    public int checkSearchResult(String searchText, String memberAddress) {
-        List<PostReadDto> list = searchPost(searchText, memberAddress);
-        return list.size() == 0 ? 0 : 1;
+    public List<Post> readByClickCountDesc(){
+        return postRepository.findByOrderByClickCountDescPostNoDesc();
     }
 
     /**
@@ -94,46 +62,6 @@ public class PostService {
      */
     public int setClickCount(Integer postNo, Integer clickCount) {
         return findPostByPostNo(postNo).getClickCount() - 1;
-    }
-
-    /**
-     * 게시물 리시트를 Page 로 변환하는 작업
-     * @param pageable
-     * @param list 검색된 게시물 리스트
-     * @return list -> Page 로 변환된 결과
-     */
-    public Page listToPage(Pageable pageable, List<PostReadDto> list) {
-        final int start = (int)pageable.getOffset();
-        final int end = Math.min((start + pageable.getPageSize()), list.size());
-        return new PageImpl<>(list.subList(start, end), pageable, list.size());
-    }
-
-    /**
-     * 변환 받은 페이지에서 시작페이지와 마지막 페이지를 계산해서 리턴
-     *
-     * @param page 구해야하는 페이지
-     * @param list page 로 변경받기 전의 리스트
-     * @return [0] 에는 시작 페이지, [1] 에는 마지막 페이지를 넣는다.
-     */
-    public List<Integer> setStartEndPage(Page page, List<PostReadDto> list) {
-        List<Integer> pageList = new ArrayList<>();
-        int startPage=1;
-        int endPage=1;
-        if(list.size()!=0) {
-            if(page.getTotalPages()<11){
-                endPage = page.getTotalPages();
-            }else{
-                if(page.getPageable().getPageNumber()<10){
-                    endPage=10;
-                }else{
-                    startPage=(page.getPageable().getPageNumber()/10)*10+1;
-                    endPage = Math.min(page.getTotalPages(), (page.getPageable().getPageNumber() / 10) * 10 + 10);
-                }
-            }
-        }
-        pageList.add(startPage);
-        pageList.add(endPage);
-        return pageList;
     }
 
     @Transactional
@@ -153,7 +81,7 @@ public class PostService {
     }
 
     public void createPost(Post post, List<MultipartFile> files)throws Exception{
-        if (files.stream().findFirst().isPresent()) {
+        if (!files.stream().findFirst().get().isEmpty()) {
             for (MultipartFile multipartFile : files) {
                 String fileName = saveImage(multipartFile);
                 post.saveImage(fileName);
