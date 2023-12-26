@@ -30,7 +30,7 @@
               <th scope="col">조회</th>
             </tr>
           </thead>
-          <th:block th:if="${searchResult} == 1">
+          <th:block th:if="${list} != null">
           <tbody>
             <tr
               class="tr"
@@ -48,7 +48,7 @@
             </tr>
           </tbody>
         </th:block>
-        <th:block th:if="${searchResult}==0">
+        <th:block th:if="${list.getTotalElements()}==0">
           <tbody>
             <tr>
               <td colspan="5">
