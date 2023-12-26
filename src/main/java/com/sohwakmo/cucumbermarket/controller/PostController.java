@@ -5,6 +5,7 @@ import com.sohwakmo.cucumbermarket.domain.Post;
 import com.sohwakmo.cucumbermarket.dto.PostCreateDto;
 import com.sohwakmo.cucumbermarket.dto.PostReadDto;
 import com.sohwakmo.cucumbermarket.dto.PostUpdateDto;
+import com.sohwakmo.cucumbermarket.dto.SearchPostDto;
 import com.sohwakmo.cucumbermarket.service.MemberService;
 import com.sohwakmo.cucumbermarket.service.PostService;
 
@@ -33,20 +34,17 @@ public class    PostController {
     private final MemberService memberService;
 
     @GetMapping("/posts")
-    public String list(Model model, @PageableDefault(size = 10, sort = "postNo", direction = Sort.Direction.DESC) Pageable pageable,
-                       @RequestParam(required = false,defaultValue = "")String searchText, @RequestParam(required = false,defaultValue = "전국") String address){
-        List<PostReadDto> list = postService.searchPost(searchText, address, pageable);
+    public String list(Model model, @PageableDefault(sort = "postNo", direction = Sort.Direction.DESC) Pageable pageable,
+                       @RequestParam(required = false,defaultValue = "")String searchText,
+                       @RequestParam(required = false,defaultValue = "전국") String address){
+        Page<SearchPostDto> page = postService.searchPost(searchText, address, pageable);
+        int endPage = page.getTotalPages();
 
-        // list 를 page 로 바꾸는 작업
-        Page page = postService.listToPage(pageable, list);
-        List<Integer> startEndPage = postService.setStartEndPage(page,list);
-
-        model.addAttribute("searchResult", postService.checkSearchResult(searchText, address, pageable));
         model.addAttribute("address", address);
         model.addAttribute("searchText", searchText);
         model.addAttribute("list", page);
-        model.addAttribute("startPage", startEndPage.get(0));
-        model.addAttribute("endPage", startEndPage.get(1));
+        model.addAttribute("startPage", page.getPageable().first().getPageNumber() + 1);
+        model.addAttribute("endPage", endPage == 0 ? endPage+ 1 : endPage);
 
         return "/post/list";
     }
