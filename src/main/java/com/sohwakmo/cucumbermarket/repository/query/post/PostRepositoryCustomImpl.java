@@ -64,9 +64,9 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
     }
 
     private BooleanExpression searchAllCondition(String searchString) {
-        return hasText((searchString)) ? post.title.upper().like(searchString)
-                .or(post.content.upper().like(searchString))
-                .or(post.member.nickname.upper().like(searchString)) : null;
+        return hasText((searchString)) ? post.title.like(searchString)
+                .or(post.content.like(searchString))
+                .or(post.member.nickname.like(searchString)) : null;
     }
     private BooleanExpression addressEq(String address) {
         return address.equals("전국") ? null : post.member.address.eq(address);
