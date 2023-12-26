@@ -35,9 +35,6 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
-
-    private  final ReplyRepository replyRepository;
 
     @Transactional(readOnly = true)
     /**
