@@ -3,11 +3,11 @@ package com.sohwakmo.cucumbermarket.dto;
 import com.sohwakmo.cucumbermarket.domain.Post;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Data
-@Builder
+@Getter
 public class SearchPostDto {
     private int postNo;
     private String title;
