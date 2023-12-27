@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sohwakmo.cucumbermarket.domain.Post;
+import com.sohwakmo.cucumbermarket.domain.QMember;
 import com.sohwakmo.cucumbermarket.dto.SearchPostDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,9 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static com.sohwakmo.cucumbermarket.domain.QMember.*;
 import static com.sohwakmo.cucumbermarket.domain.QPost.*;
 import static org.springframework.util.StringUtils.*;
 
@@ -36,15 +39,9 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
 
     @Override
     public Page<SearchPostDto> selectPostBySearch(String searchString, String address,Pageable pageable) {
-        List<SearchPostDto> result = queryFactory
-                .select(Projections.constructor(
-                        SearchPostDto.class,
-                        post.postNo,
-                        post.title,
-                        post.member.nickname.as("writer"),
-                        post.clickCount,
-                        post.createdTime
-                )).from(post)
+        List<Post> result = queryFactory
+                .selectFrom(post)
+                .join(post.member,member).fetchJoin()
                 .where(
                         searchAllCondition(searchString),
                         addressEq(address)
@@ -53,6 +50,9 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        List<SearchPostDto> posts = result.stream()
+                .map(SearchPostDto::new).toList();
+
         JPAQuery<Long> count = queryFactory
                 .select(post.count())
                 .from(post)
@@ -60,7 +60,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
                         searchAllCondition(searchString),
                         addressEq(address)
                 );
-        return PageableExecutionUtils.getPage(result, pageable, count::fetchOne);
+        return PageableExecutionUtils.getPage(posts, pageable, count::fetchOne);
     }
 
     private BooleanExpression searchAllCondition(String searchString) {
