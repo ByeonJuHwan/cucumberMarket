@@ -14,15 +14,6 @@ public class SearchPostDto {
     private String writer;
     private int clickCount;
     private LocalDateTime createdTime;
-
-    public SearchPostDto(int postNo, String title, String writer, int clickCount, LocalDateTime createdTime) {
-        this.postNo = postNo;
-        this.title = title;
-        this.writer = writer;
-        this.clickCount = clickCount;
-        this.createdTime = createdTime;
-    }
-
     public SearchPostDto(Post post) {
         this.postNo = post.getPostNo();
         this.title = post.getTitle();
