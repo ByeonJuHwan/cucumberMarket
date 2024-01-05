@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sohwakmo.cucumbermarket.domain.Post;
 import com.sohwakmo.cucumbermarket.domain.QMember;
+import com.sohwakmo.cucumbermarket.dto.PostDetailDto;
 import com.sohwakmo.cucumbermarket.dto.SearchPostDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +15,10 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.sohwakmo.cucumbermarket.domain.QMember.*;
@@ -61,6 +64,16 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
                         addressEq(address)
                 );
         return PageableExecutionUtils.getPage(posts, pageable, count::fetchOne);
+    }
+
+    @Override
+    public PostDetailDto selectDetailPostMember(Integer postNo) {
+        Optional<Post> result = Optional.ofNullable(queryFactory
+                .selectFrom(post)
+                .join(post.member, member).fetchJoin()
+                .where(post.postNo.eq(postNo))
+                .fetchOne());
+        return new PostDetailDto(result.orElseThrow(() -> new EntityNotFoundException("게시물이 없습니다 : " + postNo)));
     }
 
     private BooleanExpression searchAllCondition(String searchString) {

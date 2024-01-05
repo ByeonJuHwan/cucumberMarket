@@ -59,13 +59,13 @@
           <div class="row my-2" id="chatButton">
             <div class="col-1" id="imageDiv" style="text-align:center;padding-top: 5px;">
               <img
-                th:src="${post.member.userImgUrl}"
+                th:src="${post.userImgUrl}"
                 style="width: 50px; height: 50px"
               />
             </div>
             <div class="col mb-3" id="userNickname" style="padding-top: 0px;">
               <span
-                th:text="${nickname}"
+                th:text="${post.nickname}"
                 id="writer"
                 style="font-size: 17px; font-weight: bold"
                 >작성자</span
@@ -81,7 +81,7 @@
               >
               <span th:text="${#temporals.format(post.createdTime, 'yyyy-MM-dd-HH-mm-ss') }" id="createTime" style="color:#aaa; font-size:12px;"></span>
               <br />
-              <th:block th:if="${nickname}!=${#authentication.principal.nickname}">
+              <th:block th:if="${post.nickname}!=${#authentication.principal.nickname}">
                 <a type="button" id="gotoChat"><b>1대1채팅</b></a>
               </th:block>
             </div>
@@ -275,7 +275,7 @@
         let _left = Math.ceil(( window.screen.width - 500 )/2);
         let _top = Math.ceil(( window.screen.height - 600 )/2)
         window.open(
-          "/chat/chatRoom?memberNo=" + [[${ #authentication.principal.memberNo}]] +"&&roomId=[[${post.member.nickname}]]&&nickname=[[${#authentication.principal.nickname}]]",
+          "/chat/chatRoom?memberNo=" + [[${ #authentication.principal.memberNo}]] +"&&roomId=[[${post.nickname}]]&&nickname=[[${#authentication.principal.nickname}]]",
           "PopupNew",
           "width=500,height=600,left="+_left+",top="+_top
         );

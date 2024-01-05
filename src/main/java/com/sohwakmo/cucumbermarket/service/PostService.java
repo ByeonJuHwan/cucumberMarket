@@ -2,10 +2,7 @@ package com.sohwakmo.cucumbermarket.service;
 
 import com.sohwakmo.cucumbermarket.domain.Member;
 import com.sohwakmo.cucumbermarket.domain.Post;
-import com.sohwakmo.cucumbermarket.dto.PostCreateDto;
-import com.sohwakmo.cucumbermarket.dto.PostReadDto;
-import com.sohwakmo.cucumbermarket.dto.PostUpdateDto;
-import com.sohwakmo.cucumbermarket.dto.SearchPostDto;
+import com.sohwakmo.cucumbermarket.dto.*;
 import com.sohwakmo.cucumbermarket.repository.MemberRepository;
 import com.sohwakmo.cucumbermarket.repository.PostRepository;
 
@@ -62,10 +59,10 @@ public class PostService {
     }
 
     @Transactional
-    public Post findPostByIdAndUpdateClickCount(Integer postNo, Integer clickCount) {
-        Post post = postRepository.findById(postNo)
-                .orElseThrow(() -> new EntityNotFoundException("게시물이 없습니다 : " + postNo));
-        return post.plusClickCount(clickCount);
+    public PostDetailDto findPostByIdAndUpdateClickCount(Integer postNo, Integer clickCount) {
+        postRepository.findById(postNo)
+                .orElseThrow(() -> new EntityNotFoundException("게시물이 없습니다 : " + postNo)).plusClickCount(clickCount);
+        return postRepository.selectDetailPostMember(postNo);
     }
 
     /**

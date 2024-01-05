@@ -2,10 +2,7 @@ package com.sohwakmo.cucumbermarket.controller;
 
 import com.sohwakmo.cucumbermarket.domain.Member;
 import com.sohwakmo.cucumbermarket.domain.Post;
-import com.sohwakmo.cucumbermarket.dto.PostCreateDto;
-import com.sohwakmo.cucumbermarket.dto.PostReadDto;
-import com.sohwakmo.cucumbermarket.dto.PostUpdateDto;
-import com.sohwakmo.cucumbermarket.dto.SearchPostDto;
+import com.sohwakmo.cucumbermarket.dto.*;
 import com.sohwakmo.cucumbermarket.service.MemberService;
 import com.sohwakmo.cucumbermarket.service.PostService;
 
@@ -53,10 +50,11 @@ public class    PostController {
     @GetMapping("/detail")
     public String detail(Model model, @RequestParam Integer postNo,@RequestParam(required = false, defaultValue = "-1")Integer clickCount){
         if(clickCount==-1) clickCount = postService.setClickCount(postNo, clickCount);  // modify 에서 넘어올경우 파라미터 초기화
-        Post post = postService.findPostByIdAndUpdateClickCount(postNo,clickCount); // detail page 로 올경우 조회수도 같이 증가.
+        PostDetailDto post = postService.findPostByIdAndUpdateClickCount(postNo,clickCount); // detail page 로 올경우 조회수도 같이 증가.
+
         model.addAttribute("post", post);
-        model.addAttribute("nickname", post.getMember().getNickname());
-        model.addAttribute("member", post.getMember());
+//        model.addAttribute("nickname", post.getMember().getNickname());
+//        model.addAttribute("member", post.getMember());
 
         return "/post/detail";
     }

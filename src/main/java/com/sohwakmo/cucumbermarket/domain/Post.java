@@ -69,9 +69,8 @@ public class Post extends BaseTimeEntity {
         return this;
     }
 
-    public Post plusClickCount(Integer clickCount){
+    public void plusClickCount(Integer clickCount){
         this.clickCount = clickCount + 1;
-        return this;
     }
 
     public void saveImage01NameAndUrl(String fileName) {
